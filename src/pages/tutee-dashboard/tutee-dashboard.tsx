@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { TuteeProblemType } from "./tutee-dashboard.type";
 
-export function TuteeDashboard(): JSX.Element {
-    const tutee_id = 1;
+export function TuteeDashboard(prop: {
+    user: number | undefined;
+}): JSX.Element {
+    const tutee_id = prop.user;
 
     const baseURL = "http://127.0.0.1:5000";
     const problemsEndpoint = baseURL + "/problems/";

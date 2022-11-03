@@ -2,8 +2,10 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { TutorProblemsType } from "./tutor-dashboard.type";
 
-export function TutorDashboard() {
-    const tutor_id = 1;
+export function TutorDashboard(prop: {
+    user: number | undefined;
+}): JSX.Element {
+    const tutor_id = prop.user;
 
     const baseURL = "http://127.0.0.1:5000";
     const problemsEndpoint = baseURL + "/problems/";

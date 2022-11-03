@@ -1,8 +1,8 @@
 import React, { useRef } from "react";
 import axios from "axios";
 
-export function ProblemForm() {
-    const tutee_id = 1;
+export function ProblemForm(prop: { user: number | undefined }): JSX.Element {
+    const tutee_id = prop.user;
     const baseURL = "http://127.0.0.1:5000";
     const problemsEndpoint = baseURL + "/problems/";
     const courseRef = useRef<HTMLInputElement>(null);
