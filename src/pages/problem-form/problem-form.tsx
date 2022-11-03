@@ -2,6 +2,7 @@ import React, { useRef } from "react";
 import axios from "axios";
 
 export function ProblemForm() {
+    const tutee_id = 1;
     const baseURL = "http://127.0.0.1:5000";
     const problemsEndpoint = baseURL + "/problems/";
     const courseRef = useRef<HTMLInputElement>(null);
@@ -17,9 +18,10 @@ export function ProblemForm() {
             .post(
                 problemsEndpoint,
                 {
-                    course: course,
-                    topic: topic,
-                    problem_description: problemDescription,
+                    course_tag: course,
+                    title: topic,
+                    description: problemDescription,
+                    tutee_id: tutee_id,
                 },
                 {
                     headers: {
@@ -60,7 +62,7 @@ export function ProblemForm() {
                 </div>
                 <div className="mb-3">
                     <label htmlFor="topic" className="form-label">
-                        Topic*
+                        Title*
                     </label>
                     <input
                         type="text"

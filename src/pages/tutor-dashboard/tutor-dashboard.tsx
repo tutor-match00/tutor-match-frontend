@@ -3,19 +3,54 @@ import React, { useEffect, useState } from "react";
 import { TutorProblemsType } from "./tutor-dashboard.type";
 
 export function TutorDashboard() {
+    const tutor_id = 1;
+
     const baseURL = "http://127.0.0.1:5000";
     const problemsEndpoint = baseURL + "/problems/";
     const tuteeDashboardUrlParameter = "?tutor_id=1";
     const [tutorProblems, setTutorProblems] = useState<TutorProblemsType>([]);
+    const [reloadProblems, setReloadProblems] = useState<boolean>(false);
 
     useEffect(() => {
         axios
-            .get(problemsEndpoint + tuteeDashboardUrlParameter)
+            .get(problemsEndpoint + tuteeDashboardUrlParameter, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "http://127.0.0.1:5000",
+                    "Access-Control-Allow-Headers": "*",
+                    "Access-Control-Allow-Methods": "*",
+                },
+            })
             .then((res) => {
                 setTutorProblems(res.data.msg);
             })
             .catch((err) => console.log(err));
-    }, []);
+    }, [reloadProblems]);
+
+    function helpClicked(problem: any) {
+        console.log(problem);
+        axios
+            .put(
+                problemsEndpoint,
+                {
+                    problem_id: problem.id,
+                    tutor_id: problem.tutor?.id === tutor_id ? null : tutor_id,
+                    status: problem.status,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Headers": "*",
+                        "Access-Control-Allow-Methods": "*",
+                    },
+                }
+            )
+            .then(() => {
+                setReloadProblems(!reloadProblems);
+            })
+            .catch((err) => console.log(err));
+    }
     return (
         <>
             <header className="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
@@ -92,10 +127,17 @@ export function TutorDashboard() {
                                                 </h6>
                                                 <h6 className="card-subtitle mb-2 text-muted">
                                                     Whatsapp Number:{" "}
-                                                    {
-                                                        problem.tutee
-                                                            ?.whatsapp_number
-                                                    }
+                                                    <a
+                                                        href={
+                                                            "https://" +
+                                                            problem.tutee
+                                                                ?.whatsapp_number
+                                                        }>
+                                                        {
+                                                            problem.tutee
+                                                                ?.whatsapp_number
+                                                        }
+                                                    </a>
                                                 </h6>
                                                 <p className="card-text">
                                                     {problem["description"]}
@@ -105,8 +147,17 @@ export function TutorDashboard() {
                                                     <input
                                                         className="form-check-input"
                                                         type="checkbox"
-                                                        value=""
+                                                        checked={
+                                                            problem.tutor
+                                                                ?.id ===
+                                                            tutor_id
+                                                                ? true
+                                                                : false
+                                                        }
                                                         id=""
+                                                        onChange={() =>
+                                                            helpClicked(problem)
+                                                        }
                                                     />
                                                     <label
                                                         className="form-check-label"

@@ -3,18 +3,50 @@ import axios from "axios";
 import { TuteeProblemType } from "./tutee-dashboard.type";
 
 export function TuteeDashboard(): JSX.Element {
+    const tutee_id = 1;
+
     const baseURL = "http://127.0.0.1:5000";
     const problemsEndpoint = baseURL + "/problems/";
-    const tuteeDashboardUrlParameter = "?tutee_id=1";
+    const tuteeDashboardUrlParameter = "?tutee_id=" + tutee_id;
 
     const [tuteeProblems, setTuteeProblems] = useState<TuteeProblemType>([]);
+    const [reloadProblems, setReloadProblems] = useState<boolean>(false);
 
     useEffect(() => {
         axios
-            .get(problemsEndpoint + tuteeDashboardUrlParameter)
+            .get(problemsEndpoint + tuteeDashboardUrlParameter, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Access-Control-Allow-Origin": "*",
+                    "Access-Control-Allow-Headers": "*",
+                    "Access-Control-Allow-Methods": "*",
+                },
+            })
             .then((res) => setTuteeProblems(res.data.msg))
             .catch((err) => console.log(err));
-    }, []);
+    }, [reloadProblems]);
+
+    function helpedClicked(problem: any) {
+        axios
+            .put(
+                problemsEndpoint,
+                {
+                    problem_id: problem.id,
+                    status: !problem.status,
+                    tutor_id: problem.tutor ? problem.tutor.id : null,
+                },
+                {
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Headers": "*",
+                        "Access-Control-Allow-Methods": "*",
+                    },
+                }
+            )
+            .then(() => setReloadProblems(!reloadProblems))
+            .catch((err) => console.log(err));
+    }
 
     return (
         <>
@@ -86,14 +118,16 @@ export function TuteeDashboard(): JSX.Element {
                                                 <h5 className="card-title">
                                                     {problem.title}
                                                 </h5>
-                                                <h5 className="card-title">
+                                                <h5 className="card-text">
                                                     Status -
                                                     <span
                                                         style={{
                                                             fontStyle: "italic",
                                                             fontSize: "small",
                                                         }}>
-                                                        {problem.status.toString()}
+                                                        {problem.status
+                                                            ? "Sovled"
+                                                            : "Not Yet Solved"}
                                                     </span>
                                                 </h5>
                                                 <p className="card-text">
@@ -137,21 +171,21 @@ export function TuteeDashboard(): JSX.Element {
                                                                         }
                                                                     </h3>
                                                                     <p>
-                                                                        Course:
-                                                                        {
-                                                                            problem
-                                                                                .tutor
-                                                                                .programme
-                                                                        }
-                                                                    </p>
-                                                                    <p>
                                                                         Whatsapp
-                                                                        Number:
-                                                                        {
-                                                                            problem
-                                                                                .tutor
-                                                                                .whatsapp_number
-                                                                        }
+                                                                        Number:{" "}
+                                                                        <a
+                                                                            href={
+                                                                                "https://" +
+                                                                                problem
+                                                                                    .tutor
+                                                                                    .whatsapp_number
+                                                                            }>
+                                                                            {
+                                                                                problem
+                                                                                    .tutor
+                                                                                    .whatsapp_number
+                                                                            }
+                                                                        </a>
                                                                     </p>
                                                                 </div>
                                                             ) : (
@@ -172,8 +206,13 @@ export function TuteeDashboard(): JSX.Element {
                                                     <input
                                                         className="form-check-input"
                                                         type="checkbox"
-                                                        value=""
+                                                        checked={problem.status}
                                                         id=""
+                                                        onChange={() =>
+                                                            helpedClicked(
+                                                                problem
+                                                            )
+                                                        }
                                                     />
                                                     <label
                                                         className="form-check-label"
