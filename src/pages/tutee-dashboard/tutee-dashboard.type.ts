@@ -1,4 +1,4 @@
-export type TutorProblemsType = {
+export type TuteeProblemType = {
     course_tag: string;
     description: string;
     id_problem: Number;

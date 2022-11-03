@@ -5,11 +5,12 @@ import { TutorProblemsType } from "./tutor-dashboard.type";
 export function TutorDashboard() {
     const baseURL = "http://127.0.0.1:5000";
     const problemsEndpoint = baseURL + "/problems/";
+    const tuteeDashboardUrlParameter = "?tutor_id=1";
     const [tutorProblems, setTutorProblems] = useState<TutorProblemsType>([]);
 
     useEffect(() => {
         axios
-            .get(problemsEndpoint)
+            .get(problemsEndpoint + tuteeDashboardUrlParameter)
             .then((res) => {
                 setTutorProblems(res.data.msg);
             })
@@ -77,8 +78,8 @@ export function TutorDashboard() {
 
                         <div className="container">
                             <div className="row justify-content-center align-items-center g-2">
-                                {tutorProblems.map((problem) => (
-                                    <div className="col">
+                                {tutorProblems.map((problem, index) => (
+                                    <div className="col" key={index}>
                                         <div
                                             className="card"
                                             style={{ width: "18rem" }}>
@@ -90,7 +91,11 @@ export function TutorDashboard() {
                                                     {problem["title"]}
                                                 </h6>
                                                 <h6 className="card-subtitle mb-2 text-muted">
-                                                    Phone: 0234567867
+                                                    Whatsapp Number:{" "}
+                                                    {
+                                                        problem.tutee
+                                                            ?.whatsapp_number
+                                                    }
                                                 </h6>
                                                 <p className="card-text">
                                                     {problem["description"]}
